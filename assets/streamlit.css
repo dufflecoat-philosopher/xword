@@ -1,0 +1,31 @@
+
+/* Streamlit wrapper elements shrunk a bit */
+
+.stMainBlockContainer {
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+.stElementContainer {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+/* This could be key to vertical space saving. Look into further */
+.stVerticalBlock {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.stAppHeader {
+    background-color: rgb1(255, 255, 255, 0.0);
+    visibility: visible;
+    height: 2rem;
+    min-height: 2rem;
+}
+[data-testid = "stSidebarHeader"] {
+    height: 2rem /* Just enough room for icon */
+{
