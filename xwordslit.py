@@ -1,92 +1,61 @@
+#
+# Streamlit deployment
+# 
 import streamlit as st
-import sqlite3
-# pandas - data structures for handling data in the code
-import pandas as pd
-# px vs go?
-# go is lower level, px is built on top of go
-# px has lots of ready made functionality but go is more flexible but more work to use
-import plotly.express as px
-import plotly.graph_objects as go
-#import plotly.graph_objects as go
+# Detects user device type
+from streamlit_user_device import user_device
 
-#fig = px.bar(x=['a', 'b', 'c'], y=[1, 3, 2])
-#fig.show()
+# pathlib to find css files
+from pathlib import Path
 
-sql_wc = '''\
-SELECT p.pno as Puzzle, blogger as Blogger,
-    cast(strftime('%w',p.pdate) as INTEGER) as dno, p.dow as Day,
-    max(s.nitch) as Nitch, 
-	round(avg(c.cluewc),2) as ClueWC,
-	round(avg(c.defnwc),2) as DefnWC,
-	round(avg(c.solnwc),2) as SolnWC
-from xwordpuzzles p, xwordclues c, snitch s
-where c.pno = p.pno
-and s.pno = p.pno
-group by p.pno
-order by dno, defnwc
-'''
+import xworddata as xwd
+import xwordplotly as xwc
 
-# No need to keep reopening DB connection 
-with sqlite3.connect('xword.db') as conn:
-    #with conn.cursor() as cur:
-        # Run the SQL to get a rowset
-        #cur.execute(sql_wc)
-        #rowset = cur.fetchall()
-        #cur.close()
-    # Run the SQL using pandas to get a dataframe (like a rowset)
-    rs = pd.read_sql_query(sql_wc, conn)
-    #print(rs)
-    #conn.rollback()
-    #conn.close()
+dev = user_device()
+#if dev: st.write(dev)
+# Get the charts
+df = xwd.get_wc_x_puzzle_data()
+figs1 = xwc.wc_x_puzzle(df, device=dev)
+figs2 = xwc.wc_x_dow(df, device=dev)
 
-# Pandas DF slicing into days
-dow = {}
-pxfigs = {}
-alldata = ()
-# Its impossible to access Streamlit elements programmatically! Don't like it
-# Set up the structure in proper Python for iterating
-tablist = [
-    {'title': 'Clue', 'meas': 'ClueWC'},
-    {'title': 'Definition', 'meas' :'DefnWC'},
-    {'title': 'Solution', 'meas' :'SolnWC'}
-    ]
-# Sorted in SQL but can re-order in pandas
-# Sort by x axis to make it like a time series. Do once across all before splitting.
-# Inplace means apply to self else assumes assignment to new df
-#rs.sort_values(by=['pno','defnwc'], ascending=True, inplace=True)
-# Ignore Sun
-df = rs.loc[rs['dno'] < 6]
+# Battling the layout:
+# https://medium.com/codetodeploy/getting-the-most-out-of-your-streamlit-page-maximizing-the-screen-use-13c2b8c5a87d
 
-# Repeat the same thing for each measure? Or make it interactive?
-for tab in tablist:
-    m = tab['meas']
-    t = m.replace('WC', ' Word Count')
-    # Splitting by color automatically adds a trendline EACH. Hurrah!
-    pxfigs[m] = px.scatter(rs, x=m, y='Nitch', trendline='ols', color = 'Day', title = t,
-                            color_discrete_sequence=px.colors.qualitative.Plotly,
-                            custom_data=['Puzzle', 'Day', 'Blogger'])
-    #facet_col='dow', color='dow',
+# Default layout centres and only uses half the screen
+st.set_page_config(layout="wide")
 
-    pxfigs[m].update_traces(
-        hovertemplate='<br>'.join([
-            '<b>Puzzle: %{customdata[0]}</b>',
-            'Day: %{customdata[1]}',
-            'Blogger: %{customdata[2]}',
-            '%{m}: %{x}',
-            'Nitch: %{y}',
-        ]),
-        marker=dict(size=10, line=dict(width=1, color='DarkSlateGrey')),
-        selector=dict(mode='markers')
-        )
+# Space at the top:
+# Header class=stAppHeader
+#	Div class=stAppToolBar
+# Section class=stMain
+#	Div class=stMainBlockContainer - This is us
+#		Div class=stVerticalBlock - blank space with height=Auto
+#			Div class=stElementContainer - blank part of parent
+#			Div class=stLayoutWrapper - now we're getting closer to our stuff
+#				Div class=stVerticalBlock - This is my stContainer
+
+st.html(Path('assets/streamlit.css'))
+st.html(Path('assets/xword_streamlit.css'))
+
+chart_config = {'displayModeBar': False}
+
+# We want to loop through Measures
+meas = xwd.wc_meas
+
+# Mostly using the container to show border of this vs streamlit wrapper
+
+with st.container(border=True, vertical_alignment='top', horizontal_alignment='left'):
     
-#for fig in pxfigs.values(): fig.show()
-    
-# Separate layout from all the above stuff?
+    # DONT use st.header because Streamlit puts it OUTSIDE of this container
+    #	in with the bits we have minimised to save space 
+    st.html('<b style="font-size:200%;">Times Cryptic Wordiness</b>')
 
-st.title('Times Cryptic Wordiness')
-#c = st.container()
-tabs = st.tabs([d['title'] for d in tablist])
-for i in range(0,len(tablist)):
-    m = tablist[i]['meas']
-    with tabs[i]:
-        st.plotly_chart(pxfigs[m])
+    with st.container():
+        #tabs = st.tabs([d['title'] for d in tablist])
+        tabs = st.tabs(meas, key='xwordmeas')
+        for i in range(0,len(tabs)):
+            m = meas[i]
+            with tabs[i]:
+                st.plotly_chart(figs1[m], config=chart_config, key=f'{m}1')
+                st.plotly_chart(figs2[m], config=chart_config, key=f'{m}2')
+
