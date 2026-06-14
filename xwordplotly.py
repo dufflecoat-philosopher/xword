@@ -17,7 +17,7 @@ import xworddata as xwd
 # SNITCH colours. These seem to be hand-picked rather than standard
 colour_snitch_disc = ['#6dc17b','#b6d682','#ffeb89','#fdc580','#fa8e73','#d3d3d3','#778899']
 # DoW colours. Similar idea to SNITCH but not the same so as not to confuse
-colour_days = ['MediumSeaGreen','YellowGreen','Gold','Orange','OrangeRed','DeepSkyBlue','RoyalBlue']
+colour_days = ['MediumSeaGreen','YellowGreen','Gold','Orange','OrangeRed','LightGrey','DarkGrey']
 
 # This is hard work and the boundaries only approximate the precision of the real SNITCH
 colour_snitch_cont = pc.make_colorscale([
@@ -39,10 +39,13 @@ def layout_by_device(dev="desktop"):
     match dev:
         case 'mobile':
             layout['marker'] = dict(size=5)
+            layout['selector']=None
         case 'tablet':
             layout['marker'] = dict(size=8, line=dict(width=1, color='Grey'))
+            layout['selector']=dict(mode='markers')
         case _:
             layout['marker'] = dict(size=10, line=dict(width=1, color='Grey'))
+            layout['selector']=dict(mode='markers')
 
 # Run on import to init
 layout_by_device(None)
@@ -53,6 +56,8 @@ def wc_x_puzzle(df, **kwargs):
     # Optional parameters
     dev = kwargs.get('device', None)
     layout_by_device(dev)
+    
+    darkmode = kwargs.get('darkmode', None)
     
     figs = {}
     meas = xwd.wc_meas
@@ -66,7 +71,7 @@ def wc_x_puzzle(df, **kwargs):
             data_frame=df, x=m, y='Nitch', color = 'Day', 
             custom_data=['Puzzle', 'Day', 'Blogger'],
             trendline='ols', trendline_scope='overall',
-            trendline_color_override='black',
+            trendline_color_override='DeepSkyBlue',
             color_discrete_sequence=colour_days
             )
         # Some of this formatting needs to be environment sensitive: Mobile vs Desktop
@@ -79,7 +84,7 @@ def wc_x_puzzle(df, **kwargs):
                 'Nitch: %{y}',
             ]),
             marker=layout['marker'],
-            selector=dict(mode='markers')
+            selector=layout['selector']
             )
         # Prevent the annoying zoom feature
         fig.update_layout(
@@ -124,7 +129,7 @@ def wc_x_dow(df, **kwargs):
                 'Nitch: %{customdata[1]}',
             ]),
             marker=layout['marker'],
-            selector=dict(mode='markers')
+            selector=layout['selector']
             )
         # Prevent the annoying zoom feature
         fig.update_layout(

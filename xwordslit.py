@@ -4,6 +4,8 @@
 import streamlit as st
 # Detects user device type
 from streamlit_user_device import user_device
+# Dictionary including base = light/dark/system/custom
+# import st-theme
 
 # pathlib to find css files
 from pathlib import Path
@@ -11,8 +13,14 @@ from pathlib import Path
 import xworddata as xwd
 import xwordplotly as xwc
 
+# mobile/tablet/laptop
 dev = user_device()
 #if dev: st.write(dev)
+
+# Can force theme to light in config.toml or just pick mid-range colours
+#theme = st_theme()
+#st.write(theme)
+
 # Get the charts
 df = xwd.get_wc_x_puzzle_data()
 figs1 = xwc.wc_x_puzzle(df, device=dev)
