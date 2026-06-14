@@ -43,19 +43,20 @@ chart_config = {'displayModeBar': False}
 meas = xwd.wc_meas
 
 # Mostly using the container to show border of this vs streamlit wrapper
+# gap=Small/Medium/Large/None
 
-with st.container(border=True, vertical_alignment='top', horizontal_alignment='left'):
-    
-    # DONT use st.header because Streamlit puts it OUTSIDE of this container
-    #	in with the bits we have minimised to save space 
+with st.container(gap=None, vertical_alignment='top', horizontal_alignment='left'):
+    # Can probably use st.subheader or something
+    # Used html while testing the bits we have minimised to save space 
     st.html('<b style="font-size:200%;">Times Cryptic Wordiness</b>')
-
-    with st.container():
-        #tabs = st.tabs([d['title'] for d in tablist])
-        tabs = st.tabs(meas, key='xwordmeas')
-        for i in range(0,len(tabs)):
-            m = meas[i]
-            with tabs[i]:
-                st.plotly_chart(figs1[m], config=chart_config, key=f'{m}1')
+    # Manual tab naming for now 
+    tabs = st.tabs(['Clue','Definition','Solution'], key='myTabsWCNitch')
+    for i in range(0,len(tabs)):
+        m = meas[i]
+        with tabs[i]:
+            with st.container(gap=None, border=True):
+                st.plotly_chart(figs1[m], config=chart_config, key=f'{m}1')         
+            with st.container(gap=None, border=True):
                 st.plotly_chart(figs2[m], config=chart_config, key=f'{m}2')
+            
 
