@@ -1,3 +1,4 @@
 pandas
 plotly.express
 pathlib
+streamlit_user_device
