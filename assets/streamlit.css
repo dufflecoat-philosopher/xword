@@ -1,24 +1,34 @@
 
 /* Streamlit wrapper elements shrunk a bit */
+/* I dont think margin is used anywhere because rem values make no difference */
+/* Padding is the key */
+
+/* Need at least 0.2rem padding-top or we start to lose content under the header */
 
 .stMainBlockContainer {
-    padding-left: 2rem;
-    padding-right: 2rem;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
+    margin: 0 0 0 0;
+    padding-top: 0.5rem;
+    padding-bottom: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 .stElementContainer {
-    padding-left: 0;
-    padding-right: 0;
-    padding-top: 0;
-    padding-bottom: 0;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
 }
+.stContainer {
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    overflow: auto;
+}
+.stTabs {
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {font-size:1rem;}
+
 /* This could be key to vertical space saving. Look into further */
 .stVerticalBlock {
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-top: 0;
-    padding-bottom: 0;
+    margin: 0 0 0 0;
 }
 .stAppHeader {
     background-color: rgb1(255, 255, 255, 0.0);
