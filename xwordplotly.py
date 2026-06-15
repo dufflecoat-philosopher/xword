@@ -6,6 +6,7 @@
 # px has lots of ready made functionality but go is more flexible but more work to use
 import plotly.express as px
 #import plotly.graph_objects as go
+import plotly.io as pio
 from plotly import colors as pc
 
 import numpy as np
@@ -39,13 +40,13 @@ def layout_by_device(dev="desktop"):
     match dev:
         case 'mobile':
             layout['marker'] = dict(size=5)
-            layout['selector']=None
+            layout['showlegend']=False
         case 'tablet':
             layout['marker'] = dict(size=8, line=dict(width=1, color='Grey'))
-            layout['selector']=dict(mode='markers')
+            layout['showlegend']=True
         case _:
             layout['marker'] = dict(size=10, line=dict(width=1, color='Grey'))
-            layout['selector']=dict(mode='markers')
+            layout['showlegend']=True
 
 # Run on import to init
 layout_by_device(None)
@@ -57,7 +58,8 @@ def wc_x_puzzle(df, **kwargs):
     dev = kwargs.get('device', None)
     layout_by_device(dev)
     
-    darkmode = kwargs.get('darkmode', None)
+    #darkmode = kwargs.get('darkmode', None)
+    pio.templates.default = 'plotly_white'
     
     figs = {}
     meas = xwd.wc_meas
@@ -84,12 +86,14 @@ def wc_x_puzzle(df, **kwargs):
                 'Nitch: %{y}',
             ]),
             marker=layout['marker'],
-            selector=layout['selector']
+            selector=dict(mode='markers')
             )
-        # Prevent the annoying zoom feature
+        # Prevent the annoying zoom feature and allow drag scroll on mobile
         fig.update_layout(
+            dragmode=False,
             xaxis=dict(fixedrange=True),
-            yaxis=dict(fixedrange=True)
+            yaxis=dict(fixedrange=True),
+            showlegend=layout['showlegend']
             )
         
         figs[m] = fig
@@ -105,6 +109,8 @@ def wc_x_dow(df, **kwargs):
     dev = kwargs.get('device', None)
     layout_by_device(dev)
     
+    pio.templates.default = 'plotly_white'
+    
     figs = {}
     meas = xwd.wc_meas
 
@@ -117,6 +123,8 @@ def wc_x_dow(df, **kwargs):
             data_frame=df, x='Nitch', y=m, facet_col="Day", color='Nitch',
             custom_data=['Puzzle','Nitch','Blogger'],
             orientation='h',
+            # plotly wont accept spacing = 0
+            facet_col_spacing=0.001, facet_row_spacing=0.001,
             #color_discrete_sequence=colour_snitch
             color_continuous_scale=colour_snitch_cont
             )
@@ -129,12 +137,14 @@ def wc_x_dow(df, **kwargs):
                 'Nitch: %{customdata[1]}',
             ]),
             marker=layout['marker'],
-            selector=layout['selector']
+            selector=dict(mode='markers')
             )
-        # Prevent the annoying zoom feature
+        # Prevent the annoying zoom feature and allow drag scroll on mobile
         fig.update_layout(
+            dragmode=False,
             xaxis=dict(fixedrange=True),
-            yaxis=dict(fixedrange=True)
+            yaxis=dict(fixedrange=True),
+            showlegend=layout['showlegend']
             )
         """
         # Add a median marker line

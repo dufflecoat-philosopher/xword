@@ -15,6 +15,7 @@ import xwordplotly as xwc
 
 # mobile/tablet/laptop
 dev = user_device()
+#dev = "mobile"
 #if dev: st.write(dev)
 
 # Can force theme to light in config.toml or just pick mid-range colours
