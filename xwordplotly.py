@@ -99,7 +99,6 @@ def wc_x_puzzle(df, **kwargs):
             title=dict(automargin=True),
             showlegend=layout['showlegend']
             )
-        fig.update_coloraxes(showscale=layout['showscale'])
         
         figs[m] = fig
         # End of Measures loop
@@ -147,12 +146,20 @@ def wc_x_dow(df, **kwargs):
         # Prevent the annoying zoom feature and allow drag scroll on mobile
         fig.update_layout(
             dragmode=False,
-            xaxis=dict(fixedrange=True),
-            yaxis=dict(fixedrange=True),
             margin=dict(t=50,b=20),
             title=dict(automargin=True),
             showlegend=layout['showlegend']
             )
+        # With multiple facets doing this in update_layout only applies to the 1st
+        fig.update_xaxes(dict(fixedrange=True, visible=False, showticklabels=False))
+        fig.update_yaxes(dict(fixedrange=True))
+        #Continuous scale for NITCH
+        fig.update_coloraxes(showscale=layout['showscale'])
+        
+        # Edit the facet annotations to remove the "Day=" bit
+        for a in fig.layout.annotations:
+            a.text = a.text.split("=")[1]
+        
         """
         # Add a median marker line
         y_med = np.median(df[m])
