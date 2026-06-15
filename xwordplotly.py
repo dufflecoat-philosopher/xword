@@ -37,16 +37,18 @@ colour_snitch_cont = pc.make_colorscale([
 layout = {}
 
 def layout_by_device(dev="desktop"):
+    # Defaults are for desktop. Only change stuff for smaller formats
+    layout['marker'] = dict(size=10, line=dict(width=1, color='Grey'))
+    layout['showlegend']=True
+    layout['showscale']=True
+    
     match dev:
+        case 'tablet':
+            layout['marker'] = dict(size=8, line=dict(width=1, color='Grey'))
         case 'mobile':
             layout['marker'] = dict(size=5)
             layout['showlegend']=False
-        case 'tablet':
-            layout['marker'] = dict(size=8, line=dict(width=1, color='Grey'))
-            layout['showlegend']=True
-        case _:
-            layout['marker'] = dict(size=10, line=dict(width=1, color='Grey'))
-            layout['showlegend']=True
+            layout['showscale']=False
 
 # Run on import to init
 layout_by_device(None)
@@ -92,9 +94,12 @@ def wc_x_puzzle(df, **kwargs):
         fig.update_layout(
             dragmode=False,
             xaxis=dict(fixedrange=True),
-            yaxis=dict(fixedrange=True),
+            yaxis=dict(fixedrange=True),            
+            margin=dict(t=50,b=20),
+            title=dict(automargin=True),
             showlegend=layout['showlegend']
             )
+        fig.update_coloraxes(showscale=layout['showscale'])
         
         figs[m] = fig
         # End of Measures loop
@@ -144,6 +149,8 @@ def wc_x_dow(df, **kwargs):
             dragmode=False,
             xaxis=dict(fixedrange=True),
             yaxis=dict(fixedrange=True),
+            margin=dict(t=50,b=20),
+            title=dict(automargin=True),
             showlegend=layout['showlegend']
             )
         """

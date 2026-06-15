@@ -46,6 +46,7 @@ st.set_page_config(layout="wide")
 st.html(Path('assets/streamlit.css'))
 st.html(Path('assets/xword_streamlit.css'))
 
+# Controls for interactive charting: Zoom etc. Probably OK in desktop mode
 chart_config = {'displayModeBar': False}
 
 # We want to loop through Measures
@@ -58,7 +59,9 @@ with st.container(gap=None, vertical_alignment='top', horizontal_alignment='left
     # Can probably use st.subheader or something
     # Used html while testing the bits we have minimised to save space 
     st.html('<b style="font-size:200%;">Times Cryptic Wordiness</b>')
-    # Manual tab naming for now 
+    
+    # Tabs for mobile, columns for desktop?
+    # Manual tab naming for now
     tabs = st.tabs(['Clue','Definition','Solution'], key='myTabsWCNitch')
     for i in range(0,len(tabs)):
         m = meas[i]
