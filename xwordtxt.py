@@ -46,6 +46,9 @@ Don't know about anyone else but I find it harder when the definition is a phras
 BUT ... for some clues, notably CDs and DDs the whole clue is the definition. These are treated
 separately here.
 
+CD also includes a few where perhaps the blogger missed out the underlining entirely.
+I fixed a few obvious outliers but not got time to check every one. 29345 and 29392 get a "See me".
+
 CD/DDs are where DefnWC = ClueWC
 
 Phrases where 1 < Defn < ClueWC 
