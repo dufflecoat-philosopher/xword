@@ -1,9 +1,10 @@
 
 txt_background = '''\
-There is often talk on TfTT about the verbosity of clueing style of a puzzle. Some
+
+There is sometimes talk on TfTT about the verbosity of clueing style of a puzzle. Some
 enjoy it, some don't and I am normally in the latter camp.
 
-As well as the enjoyment factor, I have always felt that verbosity adversely impacts my scores and wondered if I could prove that. 
+As well as the enjoyment factor, I have always felt that verbosity adversely impacts my times and wondered if I could prove that. 
 
 All data covers 12 months to 9 July 2026.
 '''
@@ -14,11 +15,11 @@ Clue data from https://timesforthetimes.co.uk/
 
 NITCH data from https://times.xwdsnitch.link/
 
-Thank you to all the bloggers whose diligence in underlining or otherwise indicates the
-definition part of the clue. And for the blog in general.
+Thank you to TfTT and especially all the bloggers whose diligence in underlining or otherwise the
+definition part of the clue enables the Defn part of this.
 
 Particular thanks to Starstruck for providing back data for my WITCH and PITCH (personal NITCH)
-over and above the usual excellence of the SNITCH 
+over and above the usual excellence of the SNITCH.
 '''
 
 txt_conclusion = '''\
