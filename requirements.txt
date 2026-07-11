@@ -1,9 +1,3 @@
-numpy
-pandas
-plotly
-plotly.express
-plotly.graph_objects
-plotly.io
 pathlib
 streamlit_user_device
 st-theme
