@@ -9,6 +9,7 @@ from streamlit_user_device import user_device
 
 # pathlib to find css files
 from pathlib import Path
+from datetime import datetime
 
 import xworddata as xwd
 import xwordplotly as xwc
@@ -26,6 +27,12 @@ dev = user_device()
 # Get WC data. Its tiny, this is quick
 df = xwd.get_wc_x_puzzle_data()
 dfw = xwd.get_witch_v_nitch_data()
+
+# Get latest date
+strdate = df['pdate'].max()
+maxdate = datetime.strptime(strdate, "%Y-%m-%d %H:%M:%S").date()
+strdate = maxdate.strftime("%a, %d %b %Y")
+#print(strdate)
 
 # Battling the Streamlit layout:
 # https://medium.com/codetodeploy/getting-the-most-out-of-your-streamlit-page-maximizing-the-screen-use-13c2b8c5a87d
@@ -50,7 +57,7 @@ st.html(Path('assets/xword_streamlit.css'))
 chart_config = {'displayModeBar': False}
 
 # We want to loop through Measures
-meas = xwd.wc_meas
+#meas = xwd.wc_meas
 
 # And the charts
 # Note: Charts were all written to do a list of meas so return a dict of figs
@@ -65,46 +72,49 @@ def sl_plotly(fig, uniqkey):
         st.plotly_chart(fig, config=chart_config, key=uniqkey)
         
 # I think the plotly bit is quick and the slowness is down to web rendering (as always)
-# Do each chart as fragments anyway, might as well
+# Could do each chart as fragments but if 2 charts on 1 tab we want to control which displays first
+# Only 3 diff chart types, use 3 funcs + params?
+# Would they still exec in parallel? Should do surely?
 
 @st.fragment(parallel=True)
-def sl_all_clue_wc():
+def sl_all_clue():
     m = 'ClueWC'
+    # WC
     figs = xwc.wc_x_puzzle(df, meas=[m], device=dev)
     sl_plotly(figs[m], f'All{m}')
-@st.fragment(parallel=True)
-def sl_all_clue_dow():
-    m = 'ClueWC'
+    # DOW  
     figs = xwc.wc_x_dow(df, meas=[m], device=dev)
     sl_plotly(figs[m], f'AllDow{m}')
+    
 @st.fragment(parallel=True)
-def sl_all_defn_ph():
+def sl_all_defn():
     m = 'DefnPhrases'
     figs = xwc.wc_x_puzzle(df, meas=[m], device=dev)
     sl_plotly(figs[m], f'All{m}')
-@st.fragment(parallel=True)
-def sl_all_defn_cd():
     m = 'CDs'
     figs = xwc.wc_x_puzzle(df, meas=[m], device=dev)
     sl_plotly(figs[m], f'All{m}')
+    
 @st.fragment(parallel=True)
-def sl_all_soln_ph():
+def sl_all_soln():
     m = 'SolnPhrases'
     figs = xwc.wc_x_puzzle(df, meas=[m], device=dev)
     sl_plotly(figs[m], f'All{m}')
 
 @st.fragment(parallel=True)
-def sl_user_clue_wc():
+def sl_user_clue():
     m = 'ClueWC'
     figs = xwc.wc_witch_v_nitch(dfw, meas=[m], device=dev)
     sl_plotly(figs[m], f'User{m}')
+    
 @st.fragment(parallel=True)
-def sl_user_defn_ph():
+def sl_user_defn():
     m = 'DefnPhrases'
     figs = xwc.wc_witch_v_nitch(dfw, meas=[m], device=dev)
     sl_plotly(figs[m], f'User{m}')
+    
 @st.fragment(parallel=True)
-def sl_user_soln_ph():
+def sl_user_soln():
     m = 'SolnPhrases'
     figs = xwc.wc_witch_v_nitch(dfw, meas=[m], device=dev)
     sl_plotly(figs[m], f'User{m}')
@@ -125,44 +135,43 @@ with st.container(gap=None, vertical_alignment='top', horizontal_alignment='left
     # Tabs for mobile, columns for desktop?
     # Manual tab naming for now
     # Show global trend first, its of more general interest
-    tabSpiel, tabAll, tabUser = st.tabs(['Intro','Everyone','Solver'], key='myTabsTop')
+    tabSpiel, tabAll, tabUser = st.tabs(['Intro','Everyone','rv1'], key='myTabsTop')
 
     # TODO:
     with tabSpiel:
         with st.expander('Premise'):
-            st.write(txt.txt_background)
+            st.write(txt.txt_background.replace("maxdate", strdate))
         with st.expander('Conclusion'):
             st.write(txt.txt_conclusion)
-        with st.expander('Thanks'):
-            st.write(txt.txt_thanks)        
+        with st.expander('Credits'):
+            st.write(txt.txt_thanks)   
+        with st.expander('Tech bits'):
+            st.write(txt.txt_tech)       
         
     with tabAll:
         tabAllClue, tabAllDefn, tabAllSoln = st.tabs(['Clue','Definition','Solution'], key='myTabsNitch')
         with tabAllClue:
-            # ClueWC + DoW
-            sl_all_clue_wc()
-            sl_all_clue_dow()
+            sl_all_clue()
         with tabAllDefn:
             sl_commentry(txt.txt_defn)
             # Phrase count + CDs just for completeness
-            sl_all_defn_ph()
-            sl_all_defn_cd()
+            sl_all_defn()
         with tabAllSoln:
             sl_commentry(txt.txt_soln)
             # Phrase Count is deffo the more meaningful here
-            sl_all_soln_ph()
+            sl_all_soln()
                 
     with tabUser:
         tabUserClue, tabUserDefn, tabUserSoln = st.tabs(['Clue','Definition','Solution'], key='myTabsSolver')
         with tabUserClue:
             sl_commentry(txt.txt_solver_clue)
-            sl_user_clue_wc()
+            sl_user_clue()
         with tabUserDefn:
             sl_commentry(txt.txt_solver_defn)
-            sl_user_defn_ph()
+            sl_user_defn()
         with tabUserSoln:
             sl_commentry(txt.txt_solver_soln)
-            sl_user_soln_ph()
+            sl_user_soln()
             
 # The end
 

@@ -2,11 +2,11 @@
 txt_background = '''\
 
 There is sometimes talk on TfTT about the verbosity of clueing style of a puzzle. Some
-enjoy it, some don't and I am normally in the latter camp.
+enjoy it, some don't and I (rv1) am normally in the latter camp.
 
 As well as the enjoyment factor, I have always felt that verbosity adversely impacts my times and wondered if I could prove that. 
 
-All data covers 12 months to 9 July 2026.
+All data covers 12 months to maxdate.
 '''
 
 txt_thanks = '''\
@@ -34,10 +34,6 @@ As for my own prejudices, there is no evidence that it bothers me any more than 
 
 To a large extent all this was an excuse to learn a bit of Python and Plotly which I never had
 cause to while working.
-
-The presentation layer was never my forte so apologies for the clunkyness.
-In particular I have tried to keep it mobile friendly so it looks a bit spaced out on desktop.
-I could maybe use Columns intead of Tabs in desktop mode.
 '''
 
 txt_defn = '''\
@@ -55,6 +51,8 @@ Phrases where 1 < Defn < ClueWC
 '''
 
 txt_solver_clue = '''\
+PITCH is short for Personal NITCH. Not a term the official SNITCH uses.
+
 WITCH is a solvers Wavelength ITCH, our score relative to everyone else.
 
 Fails are not included in NITCH so here mine (in red) are given that day's NITCH so the
@@ -72,7 +70,23 @@ It appears not, my WITCH barely twitches
 txt_soln = '''\
 Phrases being solutions with multiple words. I have always found multi-word answers easier to get a handle on.
 '''
+
 txt_solver_soln = '''\
 I thought I would benefit more from lots of phrase solutions.
 There is barely any correlation but my WITCH does decrease a tad with phrase count.
+'''
+
+txt_tech = '''\
+Plotly Trendlines all use the OLS method, details can be seen by hovering over the line.
+Most show very low R-squared values meaning that wordiness is not that good a determinant of NITCH.
+Statisticians might suggest looking at the p-value. Maybe when the weather cools down.  
+
+The data scraping and this app are all Python and the charts all plotly.express.
+This is all very basic stuff but it is a sweetshop I would like to explore more.
+The whole lot is stored in GitHub, there is a link at the top of the page if anyone is interested.
+
+The presentation layer was never my forte so apologies for the clunkyness.
+In particular I have tried to keep it mobile friendly so it looks a bit spaced out on desktop.
+I could maybe use Columns intead of Tabs in desktop mode.
+I got bogged down and bored by that bit TBH
 '''

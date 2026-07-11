@@ -37,7 +37,7 @@ def get_wc_x_puzzle_data():
     # Alias to displayable names
     sql = '''\
 SELECT p.pno as Puzzle, blogger as Blogger, setter as Setter,
-    cast(strftime('%w',p.pdate) as INTEGER) as dno, p.dow as Day,
+    p.pdate, cast(strftime('%w',p.pdate) as INTEGER) as dno, p.dow as Day,
     max(s.nitch) as NITCH, 
 	count(*) as Clues,
     round(avg(c.cluewc),4) as ClueWC,

@@ -1,5 +1,9 @@
 #
 # Xword charts using plotly. Other charting tools are available
+# NOTE: These funcs could be run multi-threaded so:
+#	No Globals
+#	No updating objects passed in. Make a copy
+#	If still problems create a Class so multiple instances can be created
 # 
 # px vs go?
 # go is lower level, px is built on top of go
@@ -39,28 +43,6 @@ for i in range(len(colour_snitch)):
     rgbs.append('rgb'+str(pc.hex_to_rgb(colour_snitch[i])))
 colour_snitch_cont = pc.make_colorscale(rgbs,[0,0.095,0.238,0.309,0.452,1])
 
-# Globals
-layout = {}
-
-def layout_by_device(dev="desktop"):
-    # Defaults are for desktop. Only change stuff for smaller formats
-    layout['marker'] = dict(size=10, line=dict(width=1, color='Grey'))
-    layout['showlegend']=True
-    layout['showscale']=True
-    
-    match dev:
-        case 'tablet':
-            layout['marker'] = dict(size=8, line=dict(width=1, color='Grey'))
-        case 'mobile':
-            layout['marker'] = dict(size=5)
-            layout['showlegend']=False
-            layout['showscale']=False
-
-# Run on import to init
-layout_by_device(None)
-
-# End of layout_by_device -----------------------------------------------------
-
 # Common settings for all this set of charts
 
 def xword_layout(fig):
@@ -73,8 +55,7 @@ def xword_layout(fig):
         xaxis=dict(fixedrange=True),
         yaxis=dict(fixedrange=True),            
         margin=dict(t=50,b=20),
-        title=dict(automargin=True),
-        showlegend=layout['showlegend']
+        title=dict(automargin=True)
         )
     
 # End of xword_layout
@@ -112,13 +93,26 @@ def xword_hover(data = []):
     return hover
 # End of xword_hover ----------------------------------------------------------
 
-def wc_x_puzzle(df, meas=xwd.wc_meas, **kwargs):
+def wc_x_puzzle(df_in, meas=xwd.wc_meas, **kwargs):
     # Optional parameters
     dev = kwargs.get('device', None)
-    layout_by_device(dev)
+    
+    # layout_by_device. Too bespoke to each chart 
+    # Defaults are for desktop. Only change stuff for smaller formats
+    marker = dict(size=10, line=dict(width=1, color='Grey'))
+    legend = dict(orientation='v',itemsizing='constant')
+    
+    match dev:
+        case 'tablet':
+            marker = dict(size=8, line=dict(width=1, color='Grey'))
+        case 'mobile':
+            marker = dict(size=4)
+            legend = dict(orientation='h', itemsizing='constant',
+                          yanchor='bottom', y=-0.2, xanchor='left'
+                          )
     
     # Need it sorted by Day number for the colour scale
-    df.sort_values(['dno'], inplace=True)
+    df = df_in.sort_values(['dno']) #, inplace=True)
     
     figs = {}
 
@@ -139,8 +133,11 @@ def wc_x_puzzle(df, meas=xwd.wc_meas, **kwargs):
         # Can we make it common? Call it from the front end layer?
         fig.update_traces(
             hovertemplate = xword_hover([('Puzzle',0),('Day',1),('Blogger',2),('Count','x'),('NITCH','y')]),
-            marker=layout['marker'],
+            marker=marker,
             selector=dict(mode='markers')
+            )
+        fig.update_layout(
+            legend=legend
             )
         # Shared layout settings for all these charts
         xword_layout(fig)
@@ -153,13 +150,24 @@ def wc_x_puzzle(df, meas=xwd.wc_meas, **kwargs):
 # End of wc_x_puzzle ----------------------------------------------------------
 
 # Scatters per day. Pretty but meaningless
-def wc_x_dow(df, meas=xwd.wc_meas, **kwargs):
+def wc_x_dow(df_in, meas=xwd.wc_meas, **kwargs):
     # Optional parameters
     dev = kwargs.get('device', None)
-    layout_by_device(dev)
+
+    # layout_by_device. Too bespoke to each chart to share
+    # Default = desktop
+    marker = dict(size=10, line=dict(width=1, color='Grey'))
+    showscale=True
+    match dev:
+        case 'tablet':
+            # Tablet is not so different to desktop
+            marker = dict(size=8, line=dict(width=1, color='Grey'))
+        case 'mobile':
+            marker = dict(size=3)
+            showscale=False
 
     # Need it sorted by Day number for facets
-    df.sort_values(['dno'], inplace=True)
+    df = df_in.sort_values(['dno']) #, inplace=True)
 
     figs = {}
     
@@ -182,10 +190,12 @@ def wc_x_dow(df, meas=xwd.wc_meas, **kwargs):
         # Some of this formatting needs to be environment sensitive: Mobile vs Desktop
         fig.update_traces(
             hovertemplate=xword_hover([('Puzzle',0),('Count','x'),('NITCH',1),('Blogger',2)]),
-            marker=layout['marker'],
+            marker=marker,
             selector=dict(mode='markers')
             )
- 
+        fig.update_layout(
+            showlegend=False
+            )
         # Shared layout settings for all these charts
         xword_layout(fig)
         
@@ -194,7 +204,7 @@ def wc_x_dow(df, meas=xwd.wc_meas, **kwargs):
         fig.update_yaxes(dict(fixedrange=True))
         
         # Continuous scale for NITCH OTT in mobile mode
-        fig.update_coloraxes(showscale=layout['showscale'])
+        fig.update_coloraxes(showscale=showscale)
         
         # Edit the facet annotations to remove the "Day=" bit
         for a in fig.layout.annotations:
@@ -219,16 +229,33 @@ def wc_x_dow(df, meas=xwd.wc_meas, **kwargs):
 # End of wc_x_dow -------------------------------------------------------------
 
 def wc_witch_v_nitch(df, meas=xwd.wc_meas, **kwargs):
-
+    # Optional parameters
+    dev = kwargs.get('device', None)
     # Setting markers like this breaks hovertemplate!!!
     #data_values = ['SNITCH', 'WITCH', 'WITCH-F']
     #color_map = {'SNITCH': 'blue', 'WITCH-F': 'red', 'WITCH': 'green'}
     #colors = [color_map[value] for value in data_values]
     
+    # layout_by_device. Too bespoke to each chart to share
+    # Too many markers in this one to make them big
+    # Default = desktop
+    marker = dict(size=6)
+    legend = dict(orientation='v',itemsizing='constant')
+
+    match dev:
+        case 'tablet':
+            marker = dict(size=4)
+        case 'mobile':
+            marker = dict(size=3)
+            legend = dict(orientation='h', itemsizing='constant',
+                          yanchor='bottom', y=-0.2, xanchor='left'
+                          )
+            
     # This would have been easier in SQL but I need to learn
     # Measures all use same Y-axis of NITCH but we want them
     # Split df into 3 traces 1 per measure: NITCH, PITCH, WITCH
     # We also need the actual NITCH for hover data
+    # NOTE: Never updating the original df object
     dfn = df[meas+['NITCH','Puzzle','Blogger']]
     dfp = df[meas+['PITCH','Puzzle','Blogger','NITCH']]
     dfw = df[meas+['WITCH','Puzzle','Blogger','NITCH']]
@@ -269,8 +296,11 @@ def wc_witch_v_nitch(df, meas=xwd.wc_meas, **kwargs):
             hovertemplate = xword_hover([(None,0),('Puzzle',1),('NITCH',3),('This','y')]),
             # Want these small, its the trendline we need to see
             #marker=layout['marker'],
-            marker=dict(size=6),
+            marker=marker,
             selector=dict(mode='markers') #,color=colors)
+            )
+        fig.update_layout(
+            legend=legend
             )
         
         # Making the trendlines thicker is hard work
@@ -294,12 +324,12 @@ def wc_witch_v_nitch(df, meas=xwd.wc_meas, **kwargs):
 
 # For testing charts without deployment env
 def test():
-    
-    df = xwd.get_witch_v_nitch_data()
-    figs = wc_witch_v_nitch(df, ['SolnPhrases'])
-    #df = xwd.get_wc_x_puzzle_data()
-    #figs = wc_x_puzzle(df, ['ClueWC'])
-    #figs = wc_x_dow(df, ['ClueWC'])
+    # Getting the df is trivial, get both
+    df = xwd.get_wc_x_puzzle_data()
+    dfw = xwd.get_witch_v_nitch_data()
+    #figs = wc_x_puzzle(df, ['ClueWC'], device='mobile')
+    figs = wc_x_dow(df, ['ClueWC'], device='mobile')
+    #figs = wc_witch_v_nitch(dfw, ['ClueWC'], device='mobile')
     
     for fig in figs.values(): fig.show(config={'displayModeBar': False})
     
