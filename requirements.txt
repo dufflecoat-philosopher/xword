@@ -1,3 +1,4 @@
 pathlib
+plotly
 streamlit_user_device
 st-theme
