@@ -329,8 +329,8 @@ def test():
     # Getting the df is trivial, get both
     df = xwd.get_wc_x_puzzle_data()
     dfw = xwd.get_witch_v_nitch_data()
-    #figs = wc_x_puzzle(df, ['ClueWC'], device='mobile')
-    figs = wc_x_dow(df, ['ClueWC'], device='mobile')
+    figs = wc_x_puzzle(df, ['ClueWC'], device='mobile')
+    #figs = wc_x_dow(df, ['ClueWC'], device='mobile')
     #figs = wc_witch_v_nitch(dfw, ['ClueWC'], device='mobile')
     
     for fig in figs.values(): fig.show(config={'displayModeBar': False})
