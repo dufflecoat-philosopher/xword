@@ -1,4 +1,2 @@
-# DO NOT put values in quotes except for paths
-
 [theme]
-base = "light"
+base = 
