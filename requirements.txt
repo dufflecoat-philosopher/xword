@@ -1,5 +1,4 @@
 pathlib
-plotly.express
 statsmodels
 streamlit_user_device
 st-theme
