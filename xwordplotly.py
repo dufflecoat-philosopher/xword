@@ -108,7 +108,7 @@ def wc_x_puzzle(df_in, meas=xwd.wc_meas, **kwargs):
         case 'mobile':
             marker = dict(size=4)
             legend = dict(orientation='h', itemsizing='constant',
-                          yanchor='bottom', y=-0.4, xanchor='left'
+                          yanchor='top', y=-0.3, xanchor='left'
                           )
     
     # Need it sorted by Day number for the colour scale
