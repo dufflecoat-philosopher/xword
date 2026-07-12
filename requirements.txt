@@ -1,3 +1,4 @@
 pathlib
+plotly
 statsmodels
 streamlit_user_device
