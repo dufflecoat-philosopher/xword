@@ -163,7 +163,7 @@ def wc_x_dow(df_in, meas=xwd.wc_meas, **kwargs):
             # Tablet is not so different to desktop
             marker = dict(size=8, line=dict(width=1, color='Grey'))
         case 'mobile':
-            marker = dict(size=3)
+            marker = dict(size=5)
             showscale=False
 
     # Need it sorted by Day number for facets
@@ -248,7 +248,7 @@ def wc_witch_v_nitch(df, meas=xwd.wc_meas, **kwargs):
         case 'mobile':
             marker = dict(size=3)
             legend = dict(orientation='h', itemsizing='constant',
-                          yanchor='bottom', y=-0.2, xanchor='left'
+                          yanchor='top', y=-0.2, xanchor='left'
                           )
             
     # This would have been easier in SQL but I need to learn
