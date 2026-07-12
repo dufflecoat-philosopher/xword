@@ -24,12 +24,20 @@ dev = user_device()
 #theme = st_theme()
 #st.write(theme)
 
-# Get WC data. Its tiny, this is quick
-df = xwd.get_wc_x_puzzle_data()
-dfw = xwd.get_witch_v_nitch_data()
+# Get data from DB. Its tiny, this is quick but might as well play with caching
+
+@st.cache_data
+def get_counts_data():
+    return xwd.get_wc_x_puzzle_data()
+dfc = get_counts_data()
+
+@st.cache_data
+def get_witch_data():
+    return xwd.get_witch_v_nitch_data()
+dfw = get_witch_data()
 
 # Get latest date
-strdate = df['pdate'].max()
+strdate = dfc['pdate'].max()
 maxdate = datetime.strptime(strdate, "%Y-%m-%d %H:%M:%S").date()
 strdate = maxdate.strftime("%a, %d %b %Y")
 #print(strdate)
@@ -56,11 +64,25 @@ st.html(Path('assets/xword_streamlit.css'))
 # Controls for interactive charting: Zoom etc. Probably OK in desktop mode
 chart_config = {'displayModeBar': False}
 
-# We want to loop through Measures
-#meas = xwd.wc_meas
 
-# And the charts
+# Charts
 # Note: Charts were all written to do a list of meas so return a dict of figs
+# We want to cache the plotly figs then run the tabs as parallel fragments 
+
+@st.cache_resource
+def get_count_plot(m):
+    figs = xwc.wc_x_puzzle(dfc, meas=[m], device=dev)
+    return figs[m]
+    
+@st.cache_resource
+def get_dow_plot(m):
+    figs = xwc.wc_x_dow(dfc, meas=[m], device=dev)
+    return figs[m]
+
+@st.cache_resource
+def get_witch_plot(m):
+    figs = xwc.wc_witch_v_nitch(dfw, meas=[m], device=dev)
+    return figs[m]
 
 # Keeping things tidier
 def sl_commentry(txt):
@@ -70,54 +92,55 @@ def sl_commentry(txt):
 def sl_plotly(fig, uniqkey):
     with st.container(gap=None, border=True):
         st.plotly_chart(fig, config=chart_config, key=uniqkey)
-        
+
+# FRAGMENTS
 # I think the plotly bit is quick and the slowness is down to web rendering (as always)
-# Could do each chart as fragments but if 2 charts on 1 tab we want to control which displays first
-# Only 3 diff chart types, use 3 funcs + params?
-# Would they still exec in parallel? Should do surely?
+# Splitting into parallel fragments should, in theory be quicker
+# Could do each chart as a fragment but if 2 charts on 1 tab we want to control which displays first
+# Therefore 1 fragment per Tab
 
 @st.fragment(parallel=True)
 def sl_all_clue():
     m = 'ClueWC'
     # WC
-    figs = xwc.wc_x_puzzle(df, meas=[m], device=dev)
-    sl_plotly(figs[m], f'All{m}')
+    fig = get_count_plot(m)
+    sl_plotly(fig, f'All{m}')
     # DOW  
-    figs = xwc.wc_x_dow(df, meas=[m], device=dev)
-    sl_plotly(figs[m], f'AllDow{m}')
+    fig = get_dow_plot(m)
+    sl_plotly(fig, f'AllDow{m}')
     
 @st.fragment(parallel=True)
 def sl_all_defn():
     m = 'DefnPhrases'
-    figs = xwc.wc_x_puzzle(df, meas=[m], device=dev)
-    sl_plotly(figs[m], f'All{m}')
+    fig = get_count_plot(m)
+    sl_plotly(fig, f'All{m}')
     m = 'CDs'
-    figs = xwc.wc_x_puzzle(df, meas=[m], device=dev)
-    sl_plotly(figs[m], f'All{m}')
+    fig = get_count_plot(m)
+    sl_plotly(fig, f'All{m}')
     
 @st.fragment(parallel=True)
 def sl_all_soln():
     m = 'SolnPhrases'
-    figs = xwc.wc_x_puzzle(df, meas=[m], device=dev)
-    sl_plotly(figs[m], f'All{m}')
+    fig = get_count_plot(m)
+    sl_plotly(fig, f'All{m}')
 
 @st.fragment(parallel=True)
 def sl_user_clue():
     m = 'ClueWC'
-    figs = xwc.wc_witch_v_nitch(dfw, meas=[m], device=dev)
-    sl_plotly(figs[m], f'User{m}')
+    fig = get_witch_plot(m)
+    sl_plotly(fig, f'User{m}')
     
 @st.fragment(parallel=True)
 def sl_user_defn():
     m = 'DefnPhrases'
-    figs = xwc.wc_witch_v_nitch(dfw, meas=[m], device=dev)
-    sl_plotly(figs[m], f'User{m}')
+    fig = get_witch_plot(m)
+    sl_plotly(fig, f'User{m}')
     
 @st.fragment(parallel=True)
 def sl_user_soln():
     m = 'SolnPhrases'
-    figs = xwc.wc_witch_v_nitch(dfw, meas=[m], device=dev)
-    sl_plotly(figs[m], f'User{m}')
+    fig = get_witch_plot(m)
+    sl_plotly(fig, f'User{m}')
     
 # Mostly using the outer container to show border of this vs streamlit wrapper
 # Border removed after testing
@@ -151,6 +174,7 @@ with st.container(gap=None, vertical_alignment='top', horizontal_alignment='left
     with tabAll:
         tabAllClue, tabAllDefn, tabAllSoln = st.tabs(['Clue','Definition','Solution'], key='myTabsNitch')
         with tabAllClue:
+            sl_commentry(txt.txt_clue)
             sl_all_clue()
         with tabAllDefn:
             sl_commentry(txt.txt_defn)

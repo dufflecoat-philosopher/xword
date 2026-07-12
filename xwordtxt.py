@@ -36,6 +36,15 @@ To a large extent all this was an excuse to learn a bit of Python and Plotly whi
 cause to while working.
 '''
 
+txt_clue = '''\
+The first and probably best chart. Downhill from here.
+This measure has the highest R-squared value of all and it's hardly conclusive.
+
+Splitting by Day (DoW) does not achieve much but makes for a pretty chart.
+There are always 2 audiences: those who understand the data and want it kept basic and
+those who don't but see a pretty thing they can show a client. 
+'''
+
 txt_defn = '''\
 Don't know about anyone else but I find it harder when the definition is a phrase rather than a single word.
 

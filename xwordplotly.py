@@ -107,6 +107,7 @@ def wc_x_puzzle(df_in, meas=xwd.wc_meas, **kwargs):
             marker = dict(size=8, line=dict(width=1, color='Grey'))
         case 'mobile':
             marker = dict(size=4)
+            # anchor top/bottom refers to the t/b of the legend, not the plot
             legend = dict(orientation='h', itemsizing='constant',
                           yanchor='top', y=-0.2, xanchor='left'
                           )
@@ -247,6 +248,7 @@ def wc_witch_v_nitch(df, meas=xwd.wc_meas, **kwargs):
             marker = dict(size=4)
         case 'mobile':
             marker = dict(size=3)
+            # anchor top/bottom refers to the t/b of the legend, not the plot
             legend = dict(orientation='h', itemsizing='constant',
                           yanchor='top', y=-0.2, xanchor='left'
                           )
