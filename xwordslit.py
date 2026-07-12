@@ -152,8 +152,8 @@ with st.container(gap=None, vertical_alignment='top', horizontal_alignment='left
         # Used html while testing the bits we have minimised to save space
         #st.html('<b style="font-size:200%;">Times Cryptic Wordiness</b>')
         st.subheader("Times Cryptic Wordiness", width='content')
-        #with st.popover("", icon=':material/info:', help='Background Info'):
-        #    st.write(txt.txt_background)
+        with st.popover("", icon=':material/info:', help='Info'):
+            st.write(f"Device type = {dev}" )
     
     # Tabs for mobile, columns for desktop?
     # Manual tab naming for now
