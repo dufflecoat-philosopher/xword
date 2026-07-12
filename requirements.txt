@@ -1,4 +1,4 @@
 pathlib
-plotly
+plotly.express
 statsmodels
 streamlit_user_device
