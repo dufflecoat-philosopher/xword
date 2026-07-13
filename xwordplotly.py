@@ -217,7 +217,7 @@ def wc_x_dow(df_in, meas=xwd.wc_meas, **kwargs):
             # Need to calc Median for just this Day
             day = df.loc[df['dno'] == dno]
             med = np.median(day[m])
-            fig.add_hline(y=med, line_dash="dot", row="all", col=dno,
+            fig.add_hline(y=med, line_dash="dot", line_color="DeepSkyBlue", row="all", col=dno,
                           annotation_text="Median", 
                           annotation_position="bottom right"
                          )
