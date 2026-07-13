@@ -6,7 +6,6 @@ enjoy it, some don't and I (rv1) am normally in the latter camp.
 
 As well as the enjoyment factor, I have always felt that verbosity adversely impacts my times and wondered if I could prove that. 
 
-All data covers 12 months to maxdate.
 '''
 
 txt_thanks = '''\

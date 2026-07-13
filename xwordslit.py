@@ -11,6 +11,10 @@ import xworddata as xwd
 import xwordplotly as xwc
 import xwordtxt as txt
 
+import xwordenv as env
+
+dev = env.device
+
 # Globals
 
 # Controls for interactive charting: Zoom etc. Probably OK in desktop mode
@@ -32,17 +36,17 @@ def get_witch_data():
 # We want to cache the plotly figs then run the tabs as parallel fragments 
 
 @st.cache_resource
-def get_count_plot(df, m, dev):
+def get_count_plot(df, m):
     figs = xwc.wc_x_puzzle(df, meas=[m], device=dev)
     return figs[m]
     
 @st.cache_resource
-def get_dow_plot(df, m, dev):
+def get_dow_plot(df, m):
     figs = xwc.wc_x_dow(df, meas=[m], device=dev)
     return figs[m]
 
 @st.cache_resource
-def get_witch_plot(df, m, dev):
+def get_witch_plot(df, m):
     figs = xwc.wc_witch_v_nitch(df, meas=[m], device=dev)
     return figs[m]
 
@@ -62,54 +66,52 @@ def sl_plotly(fig, uniqkey):
 # Therefore 1 fragment per Tab
 
 @st.fragment(parallel=True)
-def sl_all_clue(df, dev):
+def sl_all_clue(df):
     m = 'ClueWC'
     # WC
-    fig = get_count_plot(df, m, dev)
+    fig = get_count_plot(df, m)
     sl_plotly(fig, f'All{m}')
     # DOW  
-    fig = get_dow_plot(df, m, dev)
+    fig = get_dow_plot(df, m)
     sl_plotly(fig, f'AllDow{m}')
     
 @st.fragment(parallel=True)
-def sl_all_defn(df, dev):
+def sl_all_defn(df):
     m = 'DefnPhrases'
-    fig = get_count_plot(df, m, dev)
+    fig = get_count_plot(df, m)
     sl_plotly(fig, f'All{m}')
     m = 'CDs'
-    fig = get_count_plot(df, m, dev)
+    fig = get_count_plot(df, m)
     sl_plotly(fig, f'All{m}')
     
 @st.fragment(parallel=True)
-def sl_all_soln(df, dev):
+def sl_all_soln(df):
     m = 'SolnPhrases'
-    fig = get_count_plot(df, m, dev)
+    fig = get_count_plot(df, m)
     sl_plotly(fig, f'All{m}')
 
 @st.fragment(parallel=True)
-def sl_user_clue(df, dev):
+def sl_user_clue(df):
     m = 'ClueWC'
-    fig = get_witch_plot(df, m, dev)
+    fig = get_witch_plot(df, m)
     sl_plotly(fig, f'User{m}')
     
 @st.fragment(parallel=True)
-def sl_user_defn(df, dev):
+def sl_user_defn(df):
     m = 'DefnPhrases'
-    fig = get_witch_plot(df, m, dev)
+    fig = get_witch_plot(df, m)
     sl_plotly(fig, f'User{m}')
     
 @st.fragment(parallel=True)
-def sl_user_soln(df, dev):
+def sl_user_soln(df):
     m = 'SolnPhrases'
-    fig = get_witch_plot(df, m, dev)
+    fig = get_witch_plot(df, m)
     sl_plotly(fig, f'User{m}')
-    
-# Mostly using the outer container to show border of this vs streamlit wrapper
-# Border removed after testing
-# gap=Small/Medium/Large/None
 
-def main(dev):
 
+def main():
+
+    # Run sequentially, its tiny and sqlite is single user
     dfc = get_counts_data()
     dfw = get_witch_data()
     
@@ -139,14 +141,18 @@ def main(dev):
     st.html(Path('assets/xword_streamlit.css'))
 
     # Start the actual layout
+    # Mostly using the outer container to show border of this vs streamlit wrapper
+    # Border removed after testing
+    # gap=Small/Medium/Large/None
+
     with st.container(gap=None, vertical_alignment='top', horizontal_alignment='left'):
         
         with st.container(horizontal=True):
             # Used html while testing the bits we have minimised to save space
             #st.html('<b style="font-size:200%;">Times Cryptic Wordiness</b>')
             st.subheader("Times Cryptic Wordiness", width='content')
-            with st.popover("", icon=':material/info:', help='Info'):
-                st.write(f"Device type = {dev}" )
+            #with st.popover("", icon=':material/info:', help='Info'):
+            #    st.write(f"Device type = {dev}" )
         
         # Tabs for mobile, columns for desktop?
         # Manual tab naming for now
@@ -156,39 +162,41 @@ def main(dev):
         # TODO:
         with tabSpiel:
             with st.expander('Premise'):
-                st.write(txt.txt_background.replace("maxdate", strdate))
+                st.write(txt.txt_background)
+                st.write(f"All data covers 12 months to {strdate}.")
             with st.expander('Conclusion'):
                 st.write(txt.txt_conclusion)
             with st.expander('Credits'):
                 st.write(txt.txt_thanks)   
             with st.expander('Tech bits'):
-                st.write(txt.txt_tech)       
+                st.write(txt.txt_tech)    
+                st.write(f"Currently running in {dev} mode")     
             
         with tabAll:
             tabAllClue, tabAllDefn, tabAllSoln = st.tabs(['Clue','Definition','Solution'], key='myTabsNitch')
             with tabAllClue:
                 sl_commentry(txt.txt_clue)
-                sl_all_clue(dfc, dev)
+                sl_all_clue(dfc)
             with tabAllDefn:
                 sl_commentry(txt.txt_defn)
                 # Phrase count + CDs just for completeness
-                sl_all_defn(dfc, dev)
+                sl_all_defn(dfc)
             with tabAllSoln:
                 sl_commentry(txt.txt_soln)
                 # Phrase Count is deffo the more meaningful here
-                sl_all_soln(dfc, dev)
+                sl_all_soln(dfc)
                     
         with tabUser:
             tabUserClue, tabUserDefn, tabUserSoln = st.tabs(['Clue','Definition','Solution'], key='myTabsSolver')
             with tabUserClue:
                 sl_commentry(txt.txt_solver_clue)
-                sl_user_clue(dfw, dev)
+                sl_user_clue(dfw)
             with tabUserDefn:
                 sl_commentry(txt.txt_solver_defn)
-                sl_user_defn(dfw, dev)
+                sl_user_defn(dfw)
             with tabUserSoln:
                 sl_commentry(txt.txt_solver_soln)
-                sl_user_soln(dfw, dev)
+                sl_user_soln(dfw)
                 
 # End main
 

@@ -9,7 +9,7 @@
 # go is lower level, px is built on top of go
 # px has lots of ready made functionality but go is more flexible but more work to use
 import plotly.express as px
-import plotly.graph_objects as go
+#import plotly.graph_objects as go
 import plotly.io as pio
 from plotly import colors as pc
 
