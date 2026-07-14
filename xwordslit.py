@@ -125,8 +125,7 @@ def main():
     # Session state is really a dictionary but supports this attribute syntax
     dev = user_device() # = None in initial streamlit server-only run
     #print(f"user_device() says {dev}")
-    if 'device' not in st.session_state:
-        st.session_state.device = dev or 'desktop' # mobile/tablet/laptop
+    st.session_state.device = dev or 'desktop' # mobile/tablet/laptop
         
     # Get latest date
     strdate = dfc['pdate'].max()
