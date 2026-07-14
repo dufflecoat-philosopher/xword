@@ -77,7 +77,9 @@ It appears not, my WITCH barely twitches
 '''
 
 txt_soln = '''\
-Phrases being solutions with multiple words. I have always found multi-word answers easier to get a handle on.
+Phrases being solutions with multiple words.
+I have always found multi-word answers easier to get a handle on but it seems to
+ make no difference overall.
 '''
 
 txt_solver_soln = '''\
