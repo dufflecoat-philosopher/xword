@@ -1,22 +1,16 @@
 #
 # App main
-# Set up env before importing funcs that will use it 
+# Set up env before starting Streamlit
+# Mostly just serves as a constant entry point regardless of we arrange the rest
+#	of the code
 #
-import xwordenv as env
 
-# Detects user device type
-from streamlit_user_device import user_device
-# mobile/tablet/laptop
-device = user_device()
-#dev = "mobile"
-#if dev: st.write(dev)
-env.device = device
+# Do any environment vars here
 
 # Environment vars initiated
-
 # Import and Start the Streamlit app
-import xwordslit
+import xwordslit as xsl
 
-xwordslit.main()
+xsl.main()
 
 

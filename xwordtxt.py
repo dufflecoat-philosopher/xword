@@ -39,9 +39,10 @@ txt_clue = '''\
 The first and probably best chart. Downhill from here.
 This measure has the highest R-squared value of all and it's hardly conclusive.
 
-Splitting by Day (DoW) does not achieve much but makes for a pretty chart.
-There are always 2 audiences: those who understand the data and want it kept basic and
-those who don't but see a pretty thing they can show a client. 
+Splitting by Day (DoW) does not achieve much but I was enjoying myself.
+You can click on the key to remove days.
+There are always 2 audiences: those who understand the data and like it minimalist and
+those who don't but like pretty colours and buttons to play with. (The sales team)
 '''
 
 txt_defn = '''\
